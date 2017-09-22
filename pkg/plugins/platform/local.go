@@ -765,6 +765,15 @@ func (l *LocalApp) Config() error {
 		fmt.Printf("Generating %s file for database connection.\n", fileName)
 		drushSettingsPath := filepath.Join(l.AppRoot(), "drush.settings.php")
 
+		// Check to see if a settings.local.php file is included in the config
+		settingsLocalIsIncluded, err := fileutil.FgrepStringInFile(fileName, "settings.local.php")
+		if err != nil {
+			return err
+		}
+		if !settingsLocalIsIncluded {
+			fmt.Printf("Warning: settings.local.php file is not properly included in %s", fileName)
+		}
+
 		// Retrieve published mysql port for drush settings file.
 		db, err := l.FindContainerByType("db")
 		if err != nil {
